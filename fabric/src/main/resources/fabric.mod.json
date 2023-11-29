@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "fading_realms",
+  "version": "${version}",
+
+  "name": "Fading realms",
+  "description": "",
+  "authors": [],
+  "contact": {},
+
+  "license": "MIT",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.restonic4.fading_realms.fabric.FadingRealmsFabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.22",
+    "minecraft": "=1.20",
+    "architectury": ">=7.1.86",
+    "restapi": "=0.9-1.20-Fabric"
+  }
+}
