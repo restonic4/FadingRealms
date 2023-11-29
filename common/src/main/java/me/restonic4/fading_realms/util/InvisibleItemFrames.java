@@ -56,7 +56,9 @@ public class InvisibleItemFrames {
                     if (scanCode == 44) {
                         isZDown.set(action == 1 || action == 2);
 
-                        RestApi.Log("Key: " + keyCode + ", Scan: " + scanCode + ", Action: " + action + ", Modifiers: " + modifiers, MOD_ID);
+                        if (action == 0) {
+                            RestApi.Log("Key: " + keyCode + ", Scan: " + scanCode + ", Action: " + action + ", Modifiers: " + modifiers, MOD_ID);
+                        }
                     }
 
                     return EventResult.pass();
