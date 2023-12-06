@@ -4,14 +4,17 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientRawInputEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.TickEvent;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
@@ -31,13 +34,6 @@ public class InvisibleItemFrames {
                                 frame.kill();
 
                                 return EventResult.interrupt(false);
-                            }
-                            else {
-                                RestApi.Log("Invisible item frame with an item, deleting", MOD_ID);
-
-                                frame.dropItem(frame);
-
-                                frame.kill();
                             }
                         }
                     }
@@ -72,6 +68,7 @@ public class InvisibleItemFrames {
 
                         //Server side
                         if (!player.level().isClientSide() && !player.getMainHandItem().isEmpty()) {
+
                             RestApi.Log("Creating invisible item frame", MOD_ID);
 
                             BlockPos fixedPosition = getPosition(direction, blockPos);
