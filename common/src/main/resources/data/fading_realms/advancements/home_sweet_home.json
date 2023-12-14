@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:red_bed"
+    },
+    "title": "Home sweet home!",
+    "description": "Place a bed next to a crafting table",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "fading_realms:crafting",
+  "criteria": {
+    "home_sweet_home": {
+      "trigger": "fading_realms:home_sweet_home"
+    }
+  },
+  "requirements": [
+    [
+      "home_sweet_home"
+    ]
+  ]
+}

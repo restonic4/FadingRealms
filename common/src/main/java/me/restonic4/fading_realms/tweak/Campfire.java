@@ -1,6 +1,7 @@
 package me.restonic4.fading_realms.tweak;
 
 import dev.architectury.event.events.common.TickEvent;
+import me.restonic4.fading_realms.advancement.AdvancementsManager;
 import me.restonic4.fading_realms.util.POIManager;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,16 @@ public class Campfire {
         TickEvent.SERVER_POST.register(
                 (server) -> {
                     ServerLevel level = server.overworld().getLevel();
+
+                    level.players().forEach(player -> {
+                        //0 0 advancement
+                        if (player.getX() <= 50 && player.getX() >= -50 && player.getZ() <= 50 && player.getZ() >= -50) {
+                            RestApi.Log("Player in bounds and advancement state of: " + player.getAdvancements().getOrStartProgress(AdvancementsManager.welcome_to_harmony.getAdvancement(player)).isDone());
+                            if (player.getAdvancements().getOrStartProgress(AdvancementsManager.welcome_to_harmony.getAdvancement(player)).isDone()) {
+                                AdvancementsManager.center_of_harmony.grant(player);
+                            }
+                        }
+                    });
 
                     if (shouldCheck(level, tickCount)) {
                         level.players().forEach(player -> {

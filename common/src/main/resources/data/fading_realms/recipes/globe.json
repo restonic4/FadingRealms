@@ -1,0 +1,34 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "BNN",
+    "GPN",
+    "NIN"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:gold_ingot",
+      "data": 0
+    },
+    "N": {
+      "item": "minecraft:gold_nugget",
+      "data": 0
+    },
+    "P": {
+      "item": "minecraft:map",
+      "data": 0
+    },
+    "B": {
+      "item": "minecraft:blue_dye",
+      "data": 0
+    },
+    "G": {
+      "item": "minecraft:green_dye",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "supplementaries:globe",
+    "count": 1
+  }
+}

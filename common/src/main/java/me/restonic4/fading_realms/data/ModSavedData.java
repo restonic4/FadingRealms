@@ -74,6 +74,8 @@ public class ModSavedData extends SavedData {
             newTag.putInt("y", y);
             newTag.putInt("z", z);
 
+            newTag.putBoolean("started", false);
+
             players.add(players.size(), newTag);
         }
 
@@ -98,6 +100,23 @@ public class ModSavedData extends SavedData {
         return isEmpty;
     }
 
+    public boolean started(UUID uuid) {
+        boolean started = true;
+
+        for (Tag tag : players) {
+            CompoundTag compound = (CompoundTag) tag;
+            UUID foundUUID = compound.getUUID("uuid");
+
+            RestApi.Log("Player uuid: " + uuid + ", found: " + foundUUID, MOD_ID);
+
+            if (Objects.equals(foundUUID.toString(), uuid.toString())) {
+                started = compound.getBoolean("started");
+            }
+        }
+
+        return started;
+    }
+
     public BlockPos getPosition(UUID uuid) {
         return new BlockPos(getX(uuid), getY(uuid), getZ(uuid));
     }
@@ -109,7 +128,7 @@ public class ModSavedData extends SavedData {
             CompoundTag compound = (CompoundTag) tag;
             UUID foundUUID = compound.getUUID("uuid");
 
-            if (foundUUID == uuid) {
+            if (Objects.equals(foundUUID.toString(), uuid.toString())) {
                 cord = compound.getInt("x");
             }
         }
@@ -124,7 +143,7 @@ public class ModSavedData extends SavedData {
             CompoundTag compound = (CompoundTag) tag;
             UUID foundUUID = compound.getUUID("uuid");
 
-            if (foundUUID == uuid) {
+            if (Objects.equals(foundUUID.toString(), uuid.toString())) {
                 cord = compound.getInt("y");
             }
         }
@@ -139,31 +158,11 @@ public class ModSavedData extends SavedData {
             CompoundTag compound = (CompoundTag) tag;
             UUID foundUUID = compound.getUUID("uuid");
 
-            if (foundUUID == uuid) {
+            if (Objects.equals(foundUUID.toString(), uuid.toString())) {
                 cord = compound.getInt("z");
             }
         }
 
         return cord;
     }
-
-    /*public Vec3 getPosition() {
-        return new Vec3(x_pos, y_pos, z_pos);
-    }
-
-    public int getX() {
-        return x_pos;
-    }
-
-    public int getY() {
-        return y_pos;
-    }
-
-    public int getZ() {
-        return z_pos;
-    }
-
-    public boolean isEmpty() {
-        return !isSaved;
-    }*/
 }
