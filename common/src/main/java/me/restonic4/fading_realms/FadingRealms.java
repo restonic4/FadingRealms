@@ -13,11 +13,13 @@ import me.restonic4.fading_realms.item.ItemManager;
 import me.restonic4.fading_realms.entity.Divinity.DivinityModel;
 import me.restonic4.fading_realms.entity.Divinity.DivinityRenderer;
 import me.restonic4.fading_realms.entity.EntityManager;
+import me.restonic4.fading_realms.sound.SoundsRegistry;
 import me.restonic4.fading_realms.tweak.TweakManager;
 import me.restonic4.fading_realms.util.InvisibleItemFrames;
 import me.restonic4.fading_realms.util.POIManager;
 import me.restonic4.restapi.RestApi;
 import me.restonic4.restapi.item.ItemRegistry;
+import me.restonic4.restapi.sound.SoundRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -35,6 +37,7 @@ public class FadingRealms
 		//// REST API ////
 
 		ItemRegistry.CreateRegistry(MOD_ID);
+		SoundRegistry.CreateRegistry(MOD_ID);
 
 		//// MOD ////
 
@@ -48,6 +51,7 @@ public class FadingRealms
 		CommandManager.register();
 		ItemManager.register();
 		EntityManager.init();
+		SoundsRegistry.register();
 
 		//// CLIENT ////
 

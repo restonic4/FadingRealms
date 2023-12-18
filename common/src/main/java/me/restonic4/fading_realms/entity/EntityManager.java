@@ -19,6 +19,8 @@ public class EntityManager {
             "divinity",
             () -> EntityType.Builder.of(Divinity::new, MobCategory.CREATURE)
                     .sized(0.6f * DIVINITY_SCALE,1.8f * DIVINITY_SCALE)
+                    .fireImmune()
+                    .clientTrackingRange(10)
                     .build(new ResourceLocation(MOD_ID, "divinity").toString())
     );
 

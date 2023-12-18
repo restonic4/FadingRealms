@@ -1,0 +1,8 @@
+{
+  "divinity_ring_wind_ambient": {
+    "subtitle": "sounds.fading_realms.divinity_ring_wind_ambient",
+    "sounds": [
+      "fading_realms:divinity_ring_wind_ambient"
+    ]
+  }
+}

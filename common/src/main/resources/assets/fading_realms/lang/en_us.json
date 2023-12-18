@@ -1,3 +1,4 @@
 {
-  "commands.setplayerspawn.success": "Player spawn data changed"
+  "commands.setplayerspawn.success": "Player spawn data changed",
+  "sounds.fading_realms.divinity_ring_wind_ambient": "Divinity ambient"
 }

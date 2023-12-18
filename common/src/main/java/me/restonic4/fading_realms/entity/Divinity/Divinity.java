@@ -1,7 +1,10 @@
 package me.restonic4.fading_realms.entity.Divinity;
 
 import me.restonic4.fading_realms.entity.EntityManager;
+import me.restonic4.fading_realms.sound.SoundsRegistry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
@@ -14,11 +17,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
+
 public class Divinity extends Animal {
-    public final AnimationState ringAnimationState = new AnimationState();
+    public final AnimationState idleAnimationState = new AnimationState();
+
+    private static final SoundEvent ambient = SoundsRegistry.Ambient.get().get();
+
+    int ticks = 0;
 
     public Divinity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    public void setNoAi(boolean bl) {
+        super.setNoAi(bl);
     }
 
     @Override
@@ -31,15 +45,23 @@ public class Divinity extends Animal {
 
     @Override
     public void tick() {
+        ticks++;
+
         if (level().isClientSide()) {
-            this.ringAnimationState.animateWhen(true, this.tickCount);
+            this.idleAnimationState.animateWhen(true, this.tickCount);
+        }
+        else {
+            if (ticks >= 6 * 20) {
+                ticks = 0;
+                this.level().playSound(null, this.getX(), this.getY() + 15, this.getZ() + 48, ambient, this.getSoundSource(), 1.0f, 1.0f);
+            }
         }
 
         super.tick();
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 10.0).add(Attributes.MOVEMENT_SPEED, 0.25);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1000.0).add(Attributes.MOVEMENT_SPEED, 0.25);
     }
 
     @Nullable

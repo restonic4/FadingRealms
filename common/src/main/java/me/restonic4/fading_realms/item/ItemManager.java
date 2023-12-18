@@ -18,17 +18,6 @@ public class ItemManager {
             )
     );
 
-    /*public static RestItem entity_egg = ItemRegistry.CreateCustom(
-            MOD_ID,
-            "entity_spawn_egg",
-            () -> new SpawnEggItem(
-                    Tests.TEST.get(),
-                    0x00DAFF,
-                    0xE079FA,
-                    new CustomItemProperties().tab(CreativeModeTabs.SPAWN_EGGS).build()
-            )
-    );*/
-
     public static void register() {
         ItemRegistry.Register(MOD_ID);
     }
