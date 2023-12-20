@@ -7,14 +7,17 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import me.restonic4.fading_realms.dimension.Limbo;
 import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.EntityManager;
+import me.restonic4.fading_realms.util.Camera.CameraManager;
 import me.restonic4.fading_realms.util.RingCalculator;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -32,6 +35,7 @@ public class CommandManager {
         COMMAND_HANDLERS.put("set_spawn_ring_data", CommandManager::set_spawn_ring_data);
         COMMAND_HANDLERS.put("set_before_limbo_box", CommandManager::set_before_limbo_box);
         COMMAND_HANDLERS.put("set_before_limbo_divinity", CommandManager::set_before_limbo_divinity);
+        COMMAND_HANDLERS.put("play_test_cutscene", CommandManager::play_test_cutscene);
     }
 
     private static void defaultHandler(CommandContext<CommandSourceStack> context) {
@@ -104,6 +108,47 @@ public class CommandManager {
         }
     }
 
+    public static void play_test_cutscene(CommandContext<CommandSourceStack> context) {
+        RestApi.Log("Playing cutscene");
+
+        MinecraftServer server = context.getSource().getServer();
+
+        for (Level level : server.getAllLevels()) {
+            for (Player player : level.players()) {
+                CameraManager.playCutscene(player, 1);
+            }
+        }
+    }
+
+    public static void start_intro(CommandContext<CommandSourceStack> context) {
+        RestApi.Log("Generating before limbo divinity");
+
+        MinecraftServer server = context.getSource().getServer();
+
+        Level level = null;
+
+        for (Level levelFound : server.getAllLevels()) {
+            String levelName = levelFound.dimension().toString();
+
+            if (levelName.contains("before") && levelName.contains("limbo")) {
+                level = levelFound;
+            }
+        }
+
+        if (level != null) {
+            Divinity entity = new Divinity(EntityManager.DIVINITY.get(), level);
+            entity.setNoAi(true);
+            entity.setPos(0.5f, -15f, -64.5f);
+
+            level.addFreshEntity(entity);
+
+            RestApi.Log("Added");
+        }
+        else {
+            RestApi.Log("Level is null");
+        }
+    }
+
     ////////////////////////////////////
 
     public static void executeCommand(String command, CommandContext<CommandSourceStack> context) {
@@ -132,6 +177,7 @@ public class CommandManager {
                     addCommand(dispatcher, "set_spawn_ring_data", 4);
                     addCommand(dispatcher, "set_before_limbo_box", 4);
                     addCommand(dispatcher, "set_before_limbo_divinity", 4);
+                    addCommand(dispatcher, "play_test_cutscene", 4);
                 }
         );
     }

@@ -33,7 +33,7 @@ public class Campfire {
                     level.players().forEach(player -> {
                         //0 0 advancement
                         if (player.getX() <= 50 && player.getX() >= -50 && player.getZ() <= 50 && player.getZ() >= -50) {
-                            RestApi.Log("Player in bounds and advancement state of: " + player.getAdvancements().getOrStartProgress(AdvancementsManager.welcome_to_harmony.getAdvancement(player)).isDone());
+                            //RestApi.Log("Player in bounds and advancement state of: " + player.getAdvancements().getOrStartProgress(AdvancementsManager.welcome_to_harmony.getAdvancement(player)).isDone());
                             if (player.getAdvancements().getOrStartProgress(AdvancementsManager.welcome_to_harmony.getAdvancement(player)).isDone()) {
                                 AdvancementsManager.center_of_harmony.grant(player);
                             }

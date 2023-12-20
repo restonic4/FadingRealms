@@ -1,9 +1,8 @@
 package me.restonic4.fading_realms.dimension;
 
-import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
-import me.restonic4.fading_realms.util.CameraManager;
+import me.restonic4.fading_realms.util.Camera.CameraManager;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +30,7 @@ public class Limbo {
                                     serverPlayer.addEffect(effect);
                                 }
 
-                                CameraManager.shake(serverPlayer);
+                                CameraManager.shake(serverPlayer, 0.2f);
                             }
                         }
                     }
@@ -41,7 +40,6 @@ public class Limbo {
         PlayerEvent.CHANGE_DIMENSION.register(
                 (serverPlayer, oldLevel, newLevel) -> {
                     String newLevelName = newLevel.toString();
-
                     //Not op
                     if (serverPlayer.server.getProfilePermissions(serverPlayer.getGameProfile()) < 4) {
                         RestApi.Log("Not op");

@@ -4,9 +4,11 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "mixins": [
-    "CameraMixin"
+    "CameraMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "Fading_Realms-common-refmap.json"
 }

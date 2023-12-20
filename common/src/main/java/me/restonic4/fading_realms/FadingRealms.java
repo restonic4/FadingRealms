@@ -15,6 +15,7 @@ import me.restonic4.fading_realms.entity.Divinity.DivinityRenderer;
 import me.restonic4.fading_realms.entity.EntityManager;
 import me.restonic4.fading_realms.sound.SoundsRegistry;
 import me.restonic4.fading_realms.tweak.TweakManager;
+import me.restonic4.fading_realms.util.Camera.CameraManager;
 import me.restonic4.fading_realms.util.InvisibleItemFrames;
 import me.restonic4.fading_realms.util.POIManager;
 import me.restonic4.restapi.RestApi;
@@ -52,6 +53,7 @@ public class FadingRealms
 		ItemManager.register();
 		EntityManager.init();
 		SoundsRegistry.register();
+		CameraManager.init();
 
 		//// CLIENT ////
 
