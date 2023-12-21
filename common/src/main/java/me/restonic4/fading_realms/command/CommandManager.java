@@ -2,17 +2,29 @@ package me.restonic4.fading_realms.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import dev.architectury.event.CompoundEventResult;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.client.ClientChatEvent;
+import dev.architectury.event.events.common.ChatEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import me.restonic4.fading_realms.dimension.Limbo;
 import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.EntityManager;
 import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.Cutscene.*;
 import me.restonic4.fading_realms.util.RingCalculator;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.arguments.coordinates.Vec2Argument;
+import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -20,22 +32,29 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
 import static me.restonic4.fading_realms.FadingRealms.RING_SIZE;
+import static net.minecraft.commands.Commands.argument;
 
 public class CommandManager {
     private static final Map<String, CommandHandler> COMMAND_HANDLERS = new HashMap<>();
+
+    public static EasingTransition pathData = new EasingTransition();
 
     static {
         COMMAND_HANDLERS.put("set_spawn_ring_data", CommandManager::set_spawn_ring_data);
         COMMAND_HANDLERS.put("set_before_limbo_box", CommandManager::set_before_limbo_box);
         COMMAND_HANDLERS.put("set_before_limbo_divinity", CommandManager::set_before_limbo_divinity);
         COMMAND_HANDLERS.put("play_test_cutscene", CommandManager::play_test_cutscene);
+        COMMAND_HANDLERS.put("play_test_cutscene_2", CommandManager::play_test_cutscene_2);
     }
 
     private static void defaultHandler(CommandContext<CommandSourceStack> context) {
@@ -120,6 +139,18 @@ public class CommandManager {
         }
     }
 
+    public static void play_test_cutscene_2(CommandContext<CommandSourceStack> context) {
+        RestApi.Log("Playing cutscene");
+
+        MinecraftServer server = context.getSource().getServer();
+
+        for (Level level : server.getAllLevels()) {
+            for (Player player : level.players()) {
+                CameraManager.playCutscene(player, 2);
+            }
+        }
+    }
+
     public static void start_intro(CommandContext<CommandSourceStack> context) {
         RestApi.Log("Generating before limbo divinity");
 
@@ -171,6 +202,237 @@ public class CommandManager {
         );
     }
 
+    public static void addCutsceneStartPointCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level) {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(level)
+                        )
+                        .then(
+                                argument("fov", DoubleArgumentType.doubleArg())
+                                        .executes(
+                                                context -> {
+                                                    Player player = context.getSource().getPlayer();
+
+                                                    Vec3 pos = player.getEyePosition();
+
+                                                    pathData.setStartPos(pos);
+                                                    pathData.setStartRot(new Vec2(player.getYRot(), player.getXRot()));
+                                                    pathData.setStartFov(context.getArgument("fov", Double.class));
+
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+                                        )
+                                        .then(
+                                                argument("facing", Vec2Argument.vec2())
+                                                        .executes(
+                                                                context -> {
+                                                                    Player player = context.getSource().getPlayer();
+
+                                                                    Vec3 pos = player.getEyePosition();
+                                                                    WorldCoordinates rot = context.getArgument("facing", WorldCoordinates.class);
+                                                                    Vec2 rotVec = rot.getRotation(context.getSource());
+
+                                                                    pathData.setStartPos(pos);
+                                                                    pathData.setStartRot(new Vec2(rotVec.y, rotVec.x));
+                                                                    pathData.setStartFov(context.getArgument("fov", Double.class));
+
+                                                                    return Command.SINGLE_SUCCESS;
+                                                                }
+                                                        )
+                                        )
+                        )
+                        .executes(
+                                context -> {
+                                    context.getSource().sendFailure(Component.nullToEmpty("Define the fov!"));
+
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
+    }
+
+    public static void addCutsceneEndPointCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level) {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(level)
+                        )
+                        .then(
+                                argument("fov", DoubleArgumentType.doubleArg())
+                                        .executes(
+                                                context -> {
+                                                    Player player = context.getSource().getPlayer();
+
+                                                    Vec3 pos = player.getEyePosition();
+
+                                                    pathData.setEndPos(pos);
+                                                    pathData.setEndRot(new Vec2(player.getYRot(), player.getXRot()));
+                                                    pathData.setEndFov(context.getArgument("fov", Double.class));
+
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+                                        )
+                                        .then(
+                                                argument("facing", Vec2Argument.vec2())
+                                                        .executes(
+                                                                context -> {
+                                                                    Player player = context.getSource().getPlayer();
+
+                                                                    Vec3 pos = player.getEyePosition();
+                                                                    WorldCoordinates rot = context.getArgument("facing", WorldCoordinates.class);
+                                                                    Vec2 rotVec = rot.getRotation(context.getSource());
+
+                                                                    pathData.setEndPos(pos);
+                                                                    pathData.setEndRot(new Vec2(rotVec.y, rotVec.x));
+                                                                    pathData.setEndFov(context.getArgument("fov", Double.class));
+
+                                                                    return Command.SINGLE_SUCCESS;
+                                                                }
+                                                        )
+                                        )
+                        )
+                        .executes(
+                                context -> {
+                                    context.getSource().sendFailure(Component.nullToEmpty("Define the fov!"));
+
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
+    }
+
+    public static void generateCutsceneCodeCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level) {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(level)
+                        )
+                        .then(
+                                argument("seconds", IntegerArgumentType.integer())
+                                        .executes(
+                                                context -> {
+                                                    pathData.setDuration(context.getArgument("seconds", Integer.class));
+
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+                                        )
+                                        .then(
+                                                argument("easing", StringArgumentType.string())
+                                                        .executes(
+                                                                context -> {
+                                                                    String easingName = context.getArgument("easing", String.class);
+                                                                    Easing easing = new Easing(easingName);
+
+                                                                    pathData.setDuration(context.getArgument("seconds", Integer.class));
+                                                                    pathData.setEasing(easing);
+
+                                                                    log(context);
+
+                                                                    return Command.SINGLE_SUCCESS;
+                                                                }
+                                                        )
+                                                        .then(
+                                                                argument("bezierPoint1", BlockPosArgument.blockPos())
+                                                                        .executes(
+                                                                                context -> {
+                                                                                    BlockPos point1 = context.getArgument("bezierPoint1", BlockPos.class);
+
+                                                                                    String easingName = context.getArgument("easing", String.class);
+                                                                                    Easing easing = new Easing(easingName);
+
+                                                                                    pathData.setDuration(context.getArgument("seconds", Integer.class));
+                                                                                    pathData.setEasing(easing);
+                                                                                    pathData.setBezier(new Vec3(point1.getX(), point1.getY(), point1.getZ()));
+
+                                                                                    log(context);
+
+                                                                                    return Command.SINGLE_SUCCESS;
+                                                                                }
+                                                                        )
+                                                                        .then(
+                                                                                argument("bezierPoint2", BlockPosArgument.blockPos())
+                                                                                        .executes(
+                                                                                                context -> {
+                                                                                                    BlockPos point1 = context.getArgument("bezierPoint1", BlockPos.class);
+                                                                                                    BlockPos point2 = context.getArgument("bezierPoint2", BlockPos.class);
+
+                                                                                                    String easingName = context.getArgument("easing", String.class);
+                                                                                                    Easing easing = new Easing(easingName);
+
+                                                                                                    pathData.setDuration(context.getArgument("seconds", Integer.class));
+                                                                                                    pathData.setEasing(easing);
+                                                                                                    pathData.setBezier(new Vec3(point1.getX(), point1.getY(), point1.getZ()), new Vec3(point2.getX(), point2.getY(), point2.getZ()));
+
+                                                                                                    log(context);
+
+                                                                                                    return Command.SINGLE_SUCCESS;
+                                                                                                }
+                                                                                        )
+                                                                        )
+                                                        )
+                                        )
+                        )
+                        .executes(
+                                context -> {
+                                    context.getSource().sendFailure(Component.nullToEmpty("Define the data!"));
+
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
+    }
+
+    public static void log(CommandContext<CommandSourceStack> context) {
+        RestApi.Log(pathData.generateJavaCode());
+        context.getSource().sendSystemMessage(Component.nullToEmpty(pathData.generateJavaCode()));
+    }
+
+    public static void addCutscenePlayCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level)
+    {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(level)
+                        )
+                        .executes(
+                                context -> {
+                                    Player player = context.getSource().getPlayer();
+
+                                    CameraManager.playCutscene(player, -1);
+
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
+    }
+
+    public static void addCutsceneRegisterCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level) {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(level)
+                        )
+                        .then(
+                                argument("name", StringArgumentType.string())
+                                        .executes(
+                                            context -> {
+                                                context.getSource().sendFailure(Component.nullToEmpty("Give it a name!"));
+
+                                                return Command.SINGLE_SUCCESS;
+                                            }
+                                        )
+                        )
+                        .executes(
+                                context -> {
+                                    context.getSource().sendFailure(Component.nullToEmpty("Give it a name!"));
+
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
+    }
+
     public static void register() {
         CommandRegistrationEvent.EVENT.register(
                 (dispatcher, registry, selection) -> {
@@ -178,6 +440,28 @@ public class CommandManager {
                     addCommand(dispatcher, "set_before_limbo_box", 4);
                     addCommand(dispatcher, "set_before_limbo_divinity", 4);
                     addCommand(dispatcher, "play_test_cutscene", 4);
+                    addCommand(dispatcher, "play_test_cutscene_2", 4);
+                    addCutsceneStartPointCommand(dispatcher, "cutscene_start_point", 4);
+                    addCutsceneEndPointCommand(dispatcher, "cutscene_end_point", 4);
+                    generateCutsceneCodeCommand(dispatcher, "cutscene_generate", 4);
+                    addCutscenePlayCommand(dispatcher, "cutscene_play", 4);
+                }
+        );
+
+        ClientChatEvent.RECEIVED.register(
+                (type, message) -> {
+                    if (message.getString().contains("new EasingTransition(")) {
+                        RestApi.Log(message.getString());
+
+                        EasingTransition transition = EasingTransitionParser.parseEasingTransition(message.getString());
+
+                        RestApi.Log("CODE:");
+                        RestApi.Log(transition.generateJavaCode());
+
+                        pathData = transition;
+                    }
+
+                    return CompoundEventResult.pass();
                 }
         );
     }

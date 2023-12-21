@@ -7,7 +7,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Cutscene {
@@ -50,6 +49,10 @@ public class Cutscene {
     public Cutscene addTransition(EasingTransition transition) {
         this.transitions.add(transition);
         return this;
+    }
+
+    public List<EasingTransition> getTransitions() {
+        return this.transitions;
     }
 
     public Cutscene setForceDetached(boolean value) {

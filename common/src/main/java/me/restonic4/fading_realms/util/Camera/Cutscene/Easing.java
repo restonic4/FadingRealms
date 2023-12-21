@@ -1,9 +1,15 @@
 package me.restonic4.fading_realms.util.Camera.Cutscene;
 
+import java.io.Serializable;
+
 public class Easing {
     private String easing;
 
     public Easing() {
+    }
+
+    public Easing(String name) {
+        this.easing = name;
     }
 
     public Easing linear() {
@@ -399,4 +405,11 @@ public class Easing {
         };
     }
 
+    public String toString() {
+        return easing;
+    }
+
+    public String generateJavaCode() {
+        return "new Easing()." + easing + "()";
+    }
 }

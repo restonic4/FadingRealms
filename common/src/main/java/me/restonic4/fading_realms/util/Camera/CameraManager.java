@@ -3,6 +3,7 @@ package me.restonic4.fading_realms.util.Camera;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
+import me.restonic4.fading_realms.util.Camera.Cutscene.Cutscene;
 import me.restonic4.fading_realms.util.Camera.Effects.PlayCutscene;
 import me.restonic4.fading_realms.util.Camera.Effects.ForceDetached;
 import me.restonic4.fading_realms.util.Camera.Effects.Reset;

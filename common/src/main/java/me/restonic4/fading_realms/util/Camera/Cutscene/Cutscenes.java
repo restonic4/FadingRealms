@@ -1,5 +1,7 @@
 package me.restonic4.fading_realms.util.Camera.Cutscene;
 
+import me.restonic4.fading_realms.command.CommandManager;
+import me.restonic4.restapi.RestApi;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -86,9 +88,35 @@ public class Cutscenes {
                     )
             );
 
+    public static Cutscene xd = new Cutscene().setForceDetached(true).setHideGui(true)
+            .addTransition(
+                    new EasingTransition(
+                            new Vec3(34.43436844186763, 97.46077650886616, -38.276982483822),
+                            new Vec3(26.793053507869143, 97.46077650886616, -31.783605571170703),
+                            new Vec2(36.599407f, 36.599407f),
+                            new Vec2(26.549376f, 26.549376f),
+                            10.0,
+                            70.0,
+                            5,
+                            new Easing().quadInOut()
+                    )
+            );
+
     public static Cutscene getCutscene(int id) {
-        if (id == 1) {
+        if (id == -1) {
+            return new Cutscene().setForceDetached(true).setHideGui(true).addTransition(new EasingTransition(CommandManager.pathData));
+        }
+        else if (id == 1) {
             return new Cutscene(cutscene);
+        }
+        else if (id == 2) {
+            Cutscene cutscene = new Cutscene(xd);
+
+            for(EasingTransition transition : cutscene.getTransitions()) {
+                RestApi.Log(transition.generateJavaCode());
+            }
+
+            return cutscene;
         }
         else {
             return null;
