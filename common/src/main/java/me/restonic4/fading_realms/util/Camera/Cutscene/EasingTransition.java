@@ -1,34 +1,48 @@
 package me.restonic4.fading_realms.util.Camera.Cutscene;
 
+import me.restonic4.fading_realms.util.Camera.CutsceneAction;
+import me.restonic4.fading_realms.util.Camera.CutsceneActionEntry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class EasingTransition {
-    private transient Vec3 startPosVec;
-    private transient Vec3 endPosVec;
-    private transient Vec2 startRotVec;
-    private transient Vec2 endRotVec;
+    private Vec3 startPosVec;
+    private Vec3 endPosVec;
+    private Vec2 startRotVec;
+    private Vec2 endRotVec;
     private double startFov;
     private double endFov;
-    private int durationSeconds;
+    private float durationSeconds;
     private Easing easingFunction;
-    private transient Minecraft mc;
     private long startTime;
     private float partialTick;
-    private transient Vec3 currentPosition;
-    private transient Vec2 currentRotation;
+    private Vec3 currentPosition;
+    private Vec2 currentRotation;
     private double currentFov;
-    private transient Vec3 bezierPoint1;
-    private transient Vec3 bezierPoint2;
+    private Vec3 bezierPoint1;
+    private Vec3 bezierPoint2;
+
+    private List<CutsceneActionEntry> actions;
+
+    private Minecraft mc;
+    private LocalPlayer localPlayer;
 
     public EasingTransition() {
 
     }
 
-    public EasingTransition(Vec3 startPosVec, Vec3 endPosVec, Vec2 startRotVec, Vec2 endRotVec, double startFov, double endFov, int durationSeconds, Easing easingFunction) {
+    public EasingTransition(float durationSeconds) {
+        this.durationSeconds = durationSeconds;
+        this.easingFunction = null;
+    }
+
+    public EasingTransition(Vec3 startPosVec, Vec3 endPosVec, Vec2 startRotVec, Vec2 endRotVec, double startFov, double endFov, float durationSeconds, Easing easingFunction) {
         this.startPosVec = startPosVec;
         this.endPosVec = endPosVec;
         this.startRotVec = startRotVec;
@@ -37,13 +51,16 @@ public class EasingTransition {
         this.endFov = endFov;
         this.durationSeconds = durationSeconds;
         this.easingFunction = easingFunction;
-        this.mc = Minecraft.getInstance();
         this.startTime = -1;
         this.currentPosition = new Vec3(0,0,0);
         this.currentRotation = new Vec2(0, 0);
         this.currentFov = 70;
         this.bezierPoint1 = null;
         this.bezierPoint2 = null;
+        this.mc = Minecraft.getInstance();
+        this.localPlayer = this.mc.player;
+        this.actions = new ArrayList<>();
+        reset();
     }
 
     public EasingTransition(EasingTransition other) {
@@ -55,13 +72,16 @@ public class EasingTransition {
         this.endFov = other.endFov;
         this.durationSeconds = other.durationSeconds;
         this.easingFunction = other.easingFunction;
-        this.mc = Minecraft.getInstance();
         this.startTime = -1;
         this.currentPosition = new Vec3(0,0,0);
         this.currentRotation = new Vec2(0, 0);
         this.currentFov = 70;
         this.bezierPoint1 = null;
         this.bezierPoint2 = null;
+        this.mc = Minecraft.getInstance();
+        this.localPlayer = this.mc.player;
+        this.actions = other.actions;
+        reset();
     }
 
     public EasingTransition setStartPos(Vec3 vec) {
@@ -109,6 +129,11 @@ public class EasingTransition {
         return this;
     }
 
+    public EasingTransition setAction(float timeToTrigger, CutsceneAction action) {
+        this.actions.add(new CutsceneActionEntry(timeToTrigger, action));
+        return this;
+    }
+
     public EasingTransition setBezier(Vec3 p1, Vec3 p2) {
         this.bezierPoint1 = p1;
         this.bezierPoint2 = p2;
@@ -124,10 +149,21 @@ public class EasingTransition {
         long elapsedTime = currentTime - startTime;
         partialTick = (float) elapsedTime / 1000.0f;
 
-        if (partialTick >= durationSeconds) {
+        if (easingFunction != null && partialTick >= durationSeconds) {
             this.currentPosition = new Vec3(endPosVec.x, endPosVec.y, endPosVec.z);
             this.currentRotation = new Vec2(endRotVec.x, endRotVec.y);
             this.currentFov = endFov;
+        }
+
+        for (CutsceneActionEntry actionEntry : actions) {
+            if (partialTick >= actionEntry.getTime() && !actionEntry.isExecuted()) {
+                actionEntry.setExecuted(true);
+                actionEntry.getAction().execute(localPlayer);
+            }
+        }
+
+        if (easingFunction == null) {
+            return;
         }
 
         float t = partialTick / durationSeconds;
@@ -157,13 +193,13 @@ public class EasingTransition {
         }
 
         if (this.bezierPoint2 == null) {
-            double point = (axis == "x") ? this.bezierPoint1.x : ((axis == "y") ? this.bezierPoint1.y : this.bezierPoint1.z);
+            double point = (Objects.equals(axis, "x")) ? this.bezierPoint1.x : ((Objects.equals(axis, "y")) ? this.bezierPoint1.y : this.bezierPoint1.z);
 
             return QuadraticBezier(start, point, end, t);
         }
         else {
-            double point1 = (axis == "x") ? this.bezierPoint1.x : ((axis == "y") ? this.bezierPoint1.y : this.bezierPoint1.z);
-            double point2 = (axis == "x") ? this.bezierPoint2.x : ((axis == "y") ? this.bezierPoint2.y : this.bezierPoint2.z);
+            double point1 = (Objects.equals(axis, "x")) ? this.bezierPoint1.x : ((Objects.equals(axis, "y")) ? this.bezierPoint1.y : this.bezierPoint1.z);
+            double point2 = (Objects.equals(axis, "x")) ? this.bezierPoint2.x : ((Objects.equals(axis, "y")) ? this.bezierPoint2.y : this.bezierPoint2.z);
 
             return CubicBezier(start, point1, point2, end, t);
         }
@@ -199,6 +235,9 @@ public class EasingTransition {
         this.currentPosition = new Vec3(0,0,0);
         this.currentRotation = new Vec2(0,0);
         this.currentFov = 70;
+        for (CutsceneActionEntry actionEntry : actions) {
+            actionEntry.setExecuted(false);
+        }
     }
 
     public Vec3 getCurrentPosition() {

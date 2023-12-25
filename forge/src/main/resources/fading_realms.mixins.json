@@ -5,7 +5,8 @@
   "minVersion": "0.8",
   "mixins": [
     "CameraMixin",
-    "GameRendererMixin"
+    "GameRendererMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

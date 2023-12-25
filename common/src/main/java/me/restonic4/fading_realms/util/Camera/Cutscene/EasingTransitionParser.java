@@ -1,5 +1,6 @@
 package me.restonic4.fading_realms.util.Camera.Cutscene;
 
+import me.restonic4.restapi.RestApi;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -47,7 +48,7 @@ public class EasingTransitionParser {
             String joined = "";
 
             for (String part : parts) {
-                joined = joined + part;
+                joined = joined + part + ",";
             }
 
             String easingPart = easingName.split("setBezier")[0];
@@ -56,16 +57,18 @@ public class EasingTransitionParser {
             easingName = easingPart.replace(".", "");
             bezierPart = bezierPart.replace("(newVec3(", "").replace("newVec3(", "");
 
+            RestApi.Log(bezierPart);
+
             double x = Double.parseDouble(bezierPart.split(",")[0]);
             double y = Double.parseDouble(bezierPart.split(",")[1]);
-            double z = Double.parseDouble(bezierPart.split(",")[2]);
+            double z = Double.parseDouble(bezierPart.split(",")[2].replace(")", ""));
 
             bezierPoint1 = new Vec3(x, y, z);
 
             if (!bezierPart.contains("null")) {
                 double x2 = Double.parseDouble(bezierPart.split(",")[3]);
                 double y2 = Double.parseDouble(bezierPart.split(",")[4]);
-                double z2 = Double.parseDouble(bezierPart.split(",")[5]);
+                double z2 = Double.parseDouble(bezierPart.split(",")[5].replace("))", ""));
 
                 bezierPoint2 = new Vec3(x2, y2, z2);
             }

@@ -81,6 +81,7 @@ public class Cutscene {
         }
         else {
             this.finished = true;
+            ((ICameraMixin)cam).closeBlackBars();
         }
     }
 

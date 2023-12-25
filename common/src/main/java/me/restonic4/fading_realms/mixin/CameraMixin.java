@@ -1,5 +1,6 @@
 package me.restonic4.fading_realms.mixin;
 
+import me.restonic4.fading_realms.gui.BlackBarsScreen;
 import me.restonic4.fading_realms.util.Camera.Cutscene.Cutscene;
 import me.restonic4.fading_realms.util.Camera.ICameraMixin;
 import me.restonic4.fading_realms.util.UtilMethods;
@@ -41,6 +42,7 @@ public abstract class CameraMixin implements ICameraMixin {
     private boolean forcedDetached = false;
     private Cutscene cutscenePlaying = null;
     private double forcedFov = -1;
+    private BlackBarsScreen currentBlackBars = null;
 
     /**
      * @author restonic4
@@ -74,6 +76,16 @@ public abstract class CameraMixin implements ICameraMixin {
 
         if (this.freeze) {
             return;
+        }
+
+        if (currentBlackBars != null) {
+            if (currentBlackBars.isFinished()) {
+                Minecraft.getInstance().setScreen(null);
+                currentBlackBars = null;
+            }
+            else {
+                currentBlackBars.update();
+            }
         }
 
         if (cutscenePlaying != null) {
@@ -228,5 +240,22 @@ public abstract class CameraMixin implements ICameraMixin {
     @Override
     public double getForcedFov() {
         return this.forcedFov;
+    }
+
+    @Override
+    public void setBlackBars(BlackBarsScreen screen) {
+        this.currentBlackBars = screen;
+    }
+
+    @Override
+    public BlackBarsScreen getBlackBars() {
+        return this.currentBlackBars;
+    }
+
+    @Override
+    public void closeBlackBars() {
+        if (this.currentBlackBars != null) {
+            this.currentBlackBars.setClosing();
+        }
     }
 }

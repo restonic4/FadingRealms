@@ -29,8 +29,6 @@ public class Limbo {
 
                                     serverPlayer.addEffect(effect);
                                 }
-
-                                CameraManager.shake(serverPlayer, 0.2f);
                             }
                         }
                     }

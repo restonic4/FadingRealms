@@ -20,6 +20,7 @@ import me.restonic4.fading_realms.util.RingCalculator;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
@@ -53,8 +54,6 @@ public class CommandManager {
         COMMAND_HANDLERS.put("set_spawn_ring_data", CommandManager::set_spawn_ring_data);
         COMMAND_HANDLERS.put("set_before_limbo_box", CommandManager::set_before_limbo_box);
         COMMAND_HANDLERS.put("set_before_limbo_divinity", CommandManager::set_before_limbo_divinity);
-        COMMAND_HANDLERS.put("play_test_cutscene", CommandManager::play_test_cutscene);
-        COMMAND_HANDLERS.put("play_test_cutscene_2", CommandManager::play_test_cutscene_2);
     }
 
     private static void defaultHandler(CommandContext<CommandSourceStack> context) {
@@ -127,28 +126,52 @@ public class CommandManager {
         }
     }
 
-    public static void play_test_cutscene(CommandContext<CommandSourceStack> context) {
-        RestApi.Log("Playing cutscene");
+    public static void play_cutscene(CommandDispatcher<CommandSourceStack> dispatcher, String command, int permLevel) {
+        dispatcher.register(
+                Commands.literal(command)
+                        .requires(
+                                source -> source.hasPermission(permLevel)
+                        )
+                        .then(
+                                argument("target", EntityArgument.players())
+                                        .executes(
+                                                context -> {
+                                                    context.getSource().sendFailure(Component.nullToEmpty("Define the cutscene id!"));
 
-        MinecraftServer server = context.getSource().getServer();
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+                                        )
+                                        .then(
+                                                argument("id", IntegerArgumentType.integer())
+                                                        .executes(
+                                                                context -> {
+                                                                    RestApi.Log("Playing cutscene");
 
-        for (Level level : server.getAllLevels()) {
-            for (Player player : level.players()) {
-                CameraManager.playCutscene(player, 1);
-            }
-        }
-    }
+                                                                    List<ServerPlayer> targetPlayers = EntityArgument.getPlayers(context, "target").stream().toList();
+                                                                    int cutsceneId = context.getArgument("id", Integer.class);
 
-    public static void play_test_cutscene_2(CommandContext<CommandSourceStack> context) {
-        RestApi.Log("Playing cutscene");
+                                                                    if (Cutscenes.getCutscene(cutsceneId) != null) {
+                                                                        for (ServerPlayer player : targetPlayers) {
+                                                                            CameraManager.playCutscene(player, cutsceneId);
+                                                                        }
+                                                                    }
+                                                                    else {
+                                                                        context.getSource().sendFailure(Component.nullToEmpty("Wrong cutscene id!"));
+                                                                    }
 
-        MinecraftServer server = context.getSource().getServer();
+                                                                    return Command.SINGLE_SUCCESS;
+                                                                }
+                                                        )
+                                        )
+                        )
+                        .executes(
+                                context -> {
+                                    context.getSource().sendFailure(Component.nullToEmpty("Define the cutscene id and players!"));
 
-        for (Level level : server.getAllLevels()) {
-            for (Player player : level.players()) {
-                CameraManager.playCutscene(player, 2);
-            }
-        }
+                                    return Command.SINGLE_SUCCESS;
+                                }
+                        )
+        );
     }
 
     public static void start_intro(CommandContext<CommandSourceStack> context) {
@@ -336,14 +359,15 @@ public class CommandManager {
                                                                 argument("bezierPoint1", BlockPosArgument.blockPos())
                                                                         .executes(
                                                                                 context -> {
-                                                                                    BlockPos point1 = context.getArgument("bezierPoint1", BlockPos.class);
+                                                                                    WorldCoordinates point1Context = context.getArgument("bezierPoint1", WorldCoordinates.class);
+                                                                                    Vec3 point1 = point1Context.getPosition(context.getSource());
 
                                                                                     String easingName = context.getArgument("easing", String.class);
                                                                                     Easing easing = new Easing(easingName);
 
                                                                                     pathData.setDuration(context.getArgument("seconds", Integer.class));
                                                                                     pathData.setEasing(easing);
-                                                                                    pathData.setBezier(new Vec3(point1.getX(), point1.getY(), point1.getZ()));
+                                                                                    pathData.setBezier(new Vec3(point1.x, point1.y, point1.z));
 
                                                                                     log(context);
 
@@ -354,15 +378,18 @@ public class CommandManager {
                                                                                 argument("bezierPoint2", BlockPosArgument.blockPos())
                                                                                         .executes(
                                                                                                 context -> {
-                                                                                                    BlockPos point1 = context.getArgument("bezierPoint1", BlockPos.class);
-                                                                                                    BlockPos point2 = context.getArgument("bezierPoint2", BlockPos.class);
+                                                                                                    WorldCoordinates point1Context = context.getArgument("bezierPoint1", WorldCoordinates.class);
+                                                                                                    Vec3 point1 = point1Context.getPosition(context.getSource());
+
+                                                                                                    WorldCoordinates point2Context = context.getArgument("bezierPoint2", WorldCoordinates.class);
+                                                                                                    Vec3 point2 = point2Context.getPosition(context.getSource());
 
                                                                                                     String easingName = context.getArgument("easing", String.class);
                                                                                                     Easing easing = new Easing(easingName);
 
                                                                                                     pathData.setDuration(context.getArgument("seconds", Integer.class));
                                                                                                     pathData.setEasing(easing);
-                                                                                                    pathData.setBezier(new Vec3(point1.getX(), point1.getY(), point1.getZ()), new Vec3(point2.getX(), point2.getY(), point2.getZ()));
+                                                                                                    pathData.setBezier(new Vec3(point1.x, point1.y, point1.z), new Vec3(point2.x, point2.y, point2.z));
 
                                                                                                     log(context);
 
@@ -407,40 +434,13 @@ public class CommandManager {
         );
     }
 
-    public static void addCutsceneRegisterCommand(CommandDispatcher<CommandSourceStack> dispatcher, String command, int level) {
-        dispatcher.register(
-                Commands.literal(command)
-                        .requires(
-                                source -> source.hasPermission(level)
-                        )
-                        .then(
-                                argument("name", StringArgumentType.string())
-                                        .executes(
-                                            context -> {
-                                                context.getSource().sendFailure(Component.nullToEmpty("Give it a name!"));
-
-                                                return Command.SINGLE_SUCCESS;
-                                            }
-                                        )
-                        )
-                        .executes(
-                                context -> {
-                                    context.getSource().sendFailure(Component.nullToEmpty("Give it a name!"));
-
-                                    return Command.SINGLE_SUCCESS;
-                                }
-                        )
-        );
-    }
-
     public static void register() {
         CommandRegistrationEvent.EVENT.register(
                 (dispatcher, registry, selection) -> {
                     addCommand(dispatcher, "set_spawn_ring_data", 4);
                     addCommand(dispatcher, "set_before_limbo_box", 4);
                     addCommand(dispatcher, "set_before_limbo_divinity", 4);
-                    addCommand(dispatcher, "play_test_cutscene", 4);
-                    addCommand(dispatcher, "play_test_cutscene_2", 4);
+                    play_cutscene(dispatcher, "play_cutscene", 4);
                     addCutsceneStartPointCommand(dispatcher, "cutscene_start_point", 4);
                     addCutsceneEndPointCommand(dispatcher, "cutscene_end_point", 4);
                     generateCutsceneCodeCommand(dispatcher, "cutscene_generate", 4);

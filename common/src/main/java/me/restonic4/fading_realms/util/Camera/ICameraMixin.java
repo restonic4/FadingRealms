@@ -1,5 +1,6 @@
 package me.restonic4.fading_realms.util.Camera;
 
+import me.restonic4.fading_realms.gui.BlackBarsScreen;
 import me.restonic4.fading_realms.util.Camera.Cutscene.Cutscene;
 import me.restonic4.fading_realms.util.Camera.Cutscene.EasingTransition;
 import net.minecraft.world.entity.Entity;
@@ -30,4 +31,10 @@ public interface ICameraMixin {
     void forceFov(double fov);
 
     double getForcedFov();
+
+    void setBlackBars(BlackBarsScreen screen);
+
+    BlackBarsScreen getBlackBars();
+
+    void closeBlackBars();
 }
