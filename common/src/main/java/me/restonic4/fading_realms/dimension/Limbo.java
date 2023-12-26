@@ -2,7 +2,6 @@ package me.restonic4.fading_realms.dimension;
 
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
 import me.restonic4.restapi.RestApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

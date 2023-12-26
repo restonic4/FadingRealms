@@ -37,6 +37,12 @@ public abstract class CameraMixin implements ICameraMixin {
     @Shadow protected abstract void setRotation(float f, float g);
     @Shadow protected abstract void setPosition(double d, double e, double f);
 
+    @Shadow public abstract Vec3 getPosition();
+
+    @Shadow public abstract float getXRot();
+
+    @Shadow public abstract float getYRot();
+
     private boolean freeze = false;
     private float shakingIntensity = 0;
     private boolean forcedDetached = false;
@@ -184,6 +190,16 @@ public abstract class CameraMixin implements ICameraMixin {
     @Override
     public void setPos(double d, double e, double f) {
         this.setPosition(d, e, f);
+    }
+
+    @Override
+    public Vec2 getRot() {
+        return new Vec2(this.getYRot(), this.getXRot());
+    }
+
+    @Override
+    public Vec3 getPos() {
+        return this.position;
     }
 
     @Override

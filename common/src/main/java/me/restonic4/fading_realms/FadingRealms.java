@@ -9,13 +9,15 @@ import me.restonic4.fading_realms.command.CommandManager;
 import me.restonic4.fading_realms.data.PlayerWorldPositionManager;
 import me.restonic4.fading_realms.dimension.EndDisable;
 import me.restonic4.fading_realms.dimension.Limbo;
+import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortalModel;
+import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortalRenderer;
 import me.restonic4.fading_realms.item.ItemManager;
 import me.restonic4.fading_realms.entity.Divinity.DivinityModel;
 import me.restonic4.fading_realms.entity.Divinity.DivinityRenderer;
 import me.restonic4.fading_realms.entity.EntityManager;
 import me.restonic4.fading_realms.sound.SoundsRegistry;
 import me.restonic4.fading_realms.tweak.TweakManager;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import me.restonic4.fading_realms.util.InvisibleItemFrames;
 import me.restonic4.fading_realms.util.POIManager;
 import me.restonic4.restapi.RestApi;
@@ -53,7 +55,7 @@ public class FadingRealms
 		ItemManager.register();
 		EntityManager.init();
 		SoundsRegistry.register();
-		CameraManager.init();
+		PacketManager.init();
 
 		//// CLIENT ////
 
@@ -70,6 +72,9 @@ public class FadingRealms
 		public static void initializeClient() {
 			EntityRendererRegistry.register(EntityManager.DIVINITY, (context) -> new DivinityRenderer(context, DIVINITY_SCALE));
 			EntityModelLayerRegistry.register(DivinityModel.LAYER_LOCATION, DivinityModel::createBodyLayer);
+
+			EntityRendererRegistry.register(EntityManager.DIVINITY_PORTAL, (context) -> new DivinityPortalRenderer(context, DIVINITY_SCALE));
+			EntityModelLayerRegistry.register(DivinityPortalModel.LAYER_LOCATION, DivinityPortalModel::createBodyLayer);
 		}
 	}
 }

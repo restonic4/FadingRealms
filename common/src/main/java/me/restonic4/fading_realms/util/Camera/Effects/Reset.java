@@ -2,7 +2,7 @@ package me.restonic4.fading_realms.util.Camera.Effects;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class Reset {
     public static void sendReset(Player player) {
-        if (CameraManager.isClient(player)) {
+        if (PacketManager.isClient(player)) {
             reset(player);
         }
         else {
@@ -21,7 +21,7 @@ public class Reset {
 
     public static void sendResetPacket(ServerPlayer player) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        NetworkManager.sendToPlayer(player, CameraManager.ResetCameraPacketId, buf);
+        NetworkManager.sendToPlayer(player, PacketManager.ResetCameraPacketId, buf);
     }
 
     public static void translateMessage(FriendlyByteBuf buf, NetworkManager.PacketContext context) {

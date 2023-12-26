@@ -2,7 +2,7 @@ package me.restonic4.fading_realms.util.Camera.Effects;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import me.restonic4.fading_realms.util.Camera.ICameraMixin;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class ForceDetached {
     public static void sendForceDetached(Player player, boolean value) {
-        if (CameraManager.isClient(player)) {
+        if (PacketManager.isClient(player)) {
             forceDetached(player, value);
         }
         else {
@@ -23,7 +23,7 @@ public class ForceDetached {
     public static void sendForceDetachedPacket(ServerPlayer player, boolean value) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeBoolean(value);
-        NetworkManager.sendToPlayer(player, CameraManager.ForceDetachedPacketId, buf);
+        NetworkManager.sendToPlayer(player, PacketManager.ForceDetachedCameraPacketId, buf);
     }
 
     public static void translateMessage(FriendlyByteBuf buf, NetworkManager.PacketContext context) {

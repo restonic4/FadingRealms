@@ -5,10 +5,16 @@ import me.restonic4.fading_realms.util.Camera.Cutscene.Cutscene;
 import me.restonic4.fading_realms.util.Camera.Cutscene.EasingTransition;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public interface ICameraMixin {
     void setRot(float f, float g);
     void setPos(double d, double e, double f);
+
+    Vec2 getRot();
+
+    Vec3 getPos();
 
     void setDetached(boolean value);
 

@@ -2,7 +2,7 @@ package me.restonic4.fading_realms.util.Camera.Effects;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import me.restonic4.fading_realms.util.Camera.ICameraMixin;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class ScreenShake {
     public static void sendShake(Player player, float intensity) {
-        if (CameraManager.isClient(player)) {
+        if (PacketManager.isClient(player)) {
             shake(player, intensity);
         }
         else {
@@ -23,7 +23,7 @@ public class ScreenShake {
     public static void sendShakePacket(ServerPlayer player, float intensity) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeFloat(intensity);
-        NetworkManager.sendToPlayer(player, CameraManager.CameraShakePacketId, buf);
+        NetworkManager.sendToPlayer(player, PacketManager.CameraShakePacketId, buf);
     }
 
     public static void translateMessage(FriendlyByteBuf buf, NetworkManager.PacketContext context) {

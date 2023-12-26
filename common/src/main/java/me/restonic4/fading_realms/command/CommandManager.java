@@ -7,14 +7,12 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import dev.architectury.event.CompoundEventResult;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientChatEvent;
-import dev.architectury.event.events.common.ChatEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import me.restonic4.fading_realms.dimension.Limbo;
 import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.EntityManager;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import me.restonic4.fading_realms.util.Camera.Cutscene.*;
 import me.restonic4.fading_realms.util.RingCalculator;
 import me.restonic4.restapi.RestApi;
@@ -28,8 +26,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -39,9 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
 import static me.restonic4.fading_realms.FadingRealms.RING_SIZE;
 import static net.minecraft.commands.Commands.argument;
 
@@ -152,7 +146,7 @@ public class CommandManager {
 
                                                                     if (Cutscenes.getCutscene(cutsceneId) != null) {
                                                                         for (ServerPlayer player : targetPlayers) {
-                                                                            CameraManager.playCutscene(player, cutsceneId);
+                                                                            PacketManager.playCutscene(player, cutsceneId);
                                                                         }
                                                                     }
                                                                     else {
@@ -426,7 +420,7 @@ public class CommandManager {
                                 context -> {
                                     Player player = context.getSource().getPlayer();
 
-                                    CameraManager.playCutscene(player, -1);
+                                    PacketManager.playCutscene(player, -1);
 
                                     return Command.SINGLE_SUCCESS;
                                 }

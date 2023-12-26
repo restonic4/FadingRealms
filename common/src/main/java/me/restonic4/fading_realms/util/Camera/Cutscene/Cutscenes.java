@@ -1,13 +1,8 @@
 package me.restonic4.fading_realms.util.Camera.Cutscene;
 
-import dev.architectury.registry.menu.MenuRegistry;
 import me.restonic4.fading_realms.command.CommandManager;
-import me.restonic4.fading_realms.gui.BlackBarsScreen;
 import me.restonic4.fading_realms.gui.ScreenManager;
-import me.restonic4.fading_realms.util.Camera.CameraManager;
-import me.restonic4.restapi.RestApi;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.MenuProvider;
+import me.restonic4.fading_realms.util.Camera.PacketManager;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -72,7 +67,7 @@ public class Cutscenes {
                             new Vec3(11.65, 5.00, 16.66)
                     ).setAction(0,
                             (localPlayer) -> {
-                                CameraManager.shake(localPlayer, 0);
+                                PacketManager.screenShake(localPlayer, 0);
                             }
                     )
             ).addTransition(
@@ -87,13 +82,17 @@ public class Cutscenes {
                             new Easing().quadInOut()
                     ).setAction(0,
                             (localPlayer) -> {
-                                CameraManager.shake(localPlayer, 0.4f);
+                                PacketManager.screenShake(localPlayer, 0.4f);
                                 ScreenManager.openBlackBars();
-                                //tell server to spawn the divinity once
+                                PacketManager.spawnDivinity(localPlayer);
                             }
                     )
             ).addTransition(
-                    new EasingTransition(3)
+                    new EasingTransition(2).setAction(0,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.25f);
+                            }
+                    )
             ).addTransition(
                     new EasingTransition(
                             new Vec3(12.97, 14.82, -2.96),
@@ -106,7 +105,7 @@ public class Cutscenes {
                             new Easing().quadInOut()
                     ).setAction(0,
                             (localPlayer) -> {
-                                CameraManager.shake(localPlayer, 0.1f);
+                                PacketManager.screenShake(localPlayer, 0.1f);
                             }
                     )
             );

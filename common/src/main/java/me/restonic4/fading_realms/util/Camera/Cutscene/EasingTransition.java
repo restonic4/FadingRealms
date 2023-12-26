@@ -2,6 +2,8 @@ package me.restonic4.fading_realms.util.Camera.Cutscene;
 
 import me.restonic4.fading_realms.util.Camera.CutsceneAction;
 import me.restonic4.fading_realms.util.Camera.CutsceneActionEntry;
+import me.restonic4.fading_realms.util.Camera.ICameraMixin;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec2;
@@ -40,6 +42,14 @@ public class EasingTransition {
     public EasingTransition(float durationSeconds) {
         this.durationSeconds = durationSeconds;
         this.easingFunction = null;
+        this.startTime = -1;
+        this.mc = Minecraft.getInstance();
+        this.localPlayer = this.mc.player;
+        this.actions = new ArrayList<>();
+        this.startPosVec = null;
+        this.startRotVec = null;
+        this.startFov = 70;
+        reset();
     }
 
     public EasingTransition(Vec3 startPosVec, Vec3 endPosVec, Vec2 startRotVec, Vec2 endRotVec, double startFov, double endFov, float durationSeconds, Easing easingFunction) {
@@ -163,6 +173,17 @@ public class EasingTransition {
         }
 
         if (easingFunction == null) {
+            ICameraMixin cam = (ICameraMixin) mc.gameRenderer.getMainCamera();
+
+            if (startPosVec == null) {
+                startPosVec = cam.getPos();
+                startRotVec = cam.getRot();
+                startFov = cam.getForcedFov();
+            }
+
+            this.currentPosition = startPosVec;
+            this.currentRotation = startRotVec;
+            this.currentFov = startFov;
             return;
         }
 
