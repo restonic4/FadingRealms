@@ -2,9 +2,6 @@ package me.restonic4.fading_realms.entity.Divinity;
 
 import me.restonic4.fading_realms.entity.EntityManager;
 import me.restonic4.fading_realms.sound.SoundsRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.AgeableMob;
@@ -15,17 +12,14 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
-
 public class Divinity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
 
-    private static final SoundEvent ambient = SoundsRegistry.Ambient.get().get();
+    private static final SoundEvent ambient = SoundsRegistry.DivinityAmbient.get().get();
 
     int ticks = 0;
 

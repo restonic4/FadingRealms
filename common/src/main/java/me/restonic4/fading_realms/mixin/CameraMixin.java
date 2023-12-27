@@ -20,6 +20,9 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.*;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 @Mixin(value = Camera.class, priority = 1001)
 public abstract class CameraMixin implements ICameraMixin {
     @Shadow private boolean initialized;
@@ -49,6 +52,7 @@ public abstract class CameraMixin implements ICameraMixin {
     private Cutscene cutscenePlaying = null;
     private double forcedFov = -1;
     private BlackBarsScreen currentBlackBars = null;
+    private Minecraft mc;
 
     /**
      * @author restonic4
@@ -84,9 +88,15 @@ public abstract class CameraMixin implements ICameraMixin {
             return;
         }
 
+        if (mc == null) {
+            mc = Minecraft.getInstance();
+        }
+
         if (currentBlackBars != null) {
-            if (currentBlackBars.isFinished()) {
-                Minecraft.getInstance().setScreen(null);
+            if (currentBlackBars.isFinished() || mc.screen != currentBlackBars) {
+                if (mc.screen == currentBlackBars) {
+                    mc.setScreen(null);
+                }
                 currentBlackBars = null;
             }
             else {
@@ -241,6 +251,25 @@ public abstract class CameraMixin implements ICameraMixin {
     @Override
     public void playCutscene(Cutscene cutscene) {
         this.cutscenePlaying = cutscene;
+    }
+
+    @Override
+    public void playCutscene(Cutscene cutscene, float delay) {
+        if (delay > 0) {
+            Timer timer = new Timer();
+
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    playCutscene(cutscene);
+                }
+            };
+
+            timer.schedule(task, (long) (delay * 1000));
+        }
+        else {
+            playCutscene(cutscene);
+        }
     }
 
     @Override

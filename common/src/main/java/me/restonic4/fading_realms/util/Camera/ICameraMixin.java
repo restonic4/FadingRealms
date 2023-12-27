@@ -32,6 +32,8 @@ public interface ICameraMixin {
 
     void playCutscene(Cutscene cutscene);
 
+    void playCutscene(Cutscene cutscene, float delay);
+
     Cutscene getCutscenePlaying();
 
     void forceFov(double fov);

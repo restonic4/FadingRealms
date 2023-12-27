@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.logging.LogUtils;
 import me.restonic4.fading_realms.gui.BlackBarsScreen;
 import me.restonic4.fading_realms.util.IMinecraftMixin;
+import me.restonic4.restapi.RestApi;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,7 @@ public abstract class MinecraftMixin implements IMinecraftMixin {
      */
     @Overwrite
     public void setScreen(@Nullable Screen screen) {
+        RestApi.Log("SCREEN METHOD CALLED WITH " + screen);
         if (SharedConstants.IS_RUNNING_IN_IDE && Thread.currentThread() != this.gameThread) {
             LOGGER.error("setScreen called from non-game thread");
         }
@@ -69,10 +71,11 @@ public abstract class MinecraftMixin implements IMinecraftMixin {
         }
         BufferUploader.reset();
         if (screen != null) {
-            if (!screen.getTitle().getString().toLowerCase().contains("cutscene")) {
+            if (!screen.getTitle().getString().toLowerCase().contains("fixedscreen")) {
                 this.mouseHandler.releaseMouse();
                 KeyMapping.releaseAll();
             }
+            RestApi.Log("Starting " + screen);
             screen.init(Minecraft.getInstance(), this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
             this.noRender = false;
         } else {

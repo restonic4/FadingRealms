@@ -21,9 +21,11 @@ public class PacketManager {
     public static final ResourceLocation ResetCameraPacketId = new ResourceLocation(MOD_ID, "reset_camera_packet");
     public static final ResourceLocation ForceDetachedCameraPacketId = new ResourceLocation(MOD_ID, "force_detached_camera_packet");
     public static final ResourceLocation PlayCutscenePacketId = new ResourceLocation(MOD_ID, "play_cutscene_packet");
+    public static final ResourceLocation CloseScreensPacketId = new ResourceLocation(MOD_ID, "close_screens_packet");
 
     //CLIENT TO SERVER
     public static final ResourceLocation SpawnDivinityPacketId = new ResourceLocation(MOD_ID, "spawn_divinity_packet");
+    public static final ResourceLocation SpawnDivinityPart2PacketId = new ResourceLocation(MOD_ID, "spawn_divinity_part2_packet");
 
     /**
         METHODS TO CALL
@@ -41,11 +43,27 @@ public class PacketManager {
     }
 
     public static void playCutscene(Player player, int cutsceneID) {
-        PlayCutscene.sendCutscene(player, cutsceneID);
+        playCutscene(player, cutsceneID, 0);
+    }
+
+    public static void playCutscene(Player player, int cutsceneID, float delay) {
+        PlayCutscene.sendCutscene(player, cutsceneID, delay);
     }
 
     public static void spawnDivinity(Player player) {
         SpawnDivinity.send(player);
+    }
+
+    public static void closeScreens(Player player) {
+        closeScreens(player, 0);
+    }
+
+    public static void closeScreens(Player player, float delay) {
+        CloseScreens.send(player, delay);
+    }
+
+    public static void spawnDivinityPart2(Player player) {
+        SpawnDivinityPart2.send(player);
     }
 
     /**
@@ -72,6 +90,12 @@ public class PacketManager {
 
         //Spawn divinity
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, SpawnDivinityPacketId, SpawnDivinity::translateMessage);
+
+        //Close white screen
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, CloseScreensPacketId, CloseScreens::translateMessage);
+
+        //Spawn divinity part 2
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, SpawnDivinityPart2PacketId, SpawnDivinityPart2::translateMessage);
     }
 
     private static void registerEvents() {

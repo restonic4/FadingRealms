@@ -2,7 +2,10 @@ package me.restonic4.fading_realms.util.Camera.Cutscene;
 
 import me.restonic4.fading_realms.command.CommandManager;
 import me.restonic4.fading_realms.gui.ScreenManager;
+import me.restonic4.fading_realms.gui.WhiteScreen;
 import me.restonic4.fading_realms.util.Camera.PacketManager;
+import me.restonic4.restapi.RestApi;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -105,7 +108,96 @@ public class Cutscenes {
                             new Easing().quadInOut()
                     ).setAction(0,
                             (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.2f);
+                            }
+                    )
+            ).addTransition(
+                    new EasingTransition(
+                            new Vec3(12.97, 14.82, -2.96),
+                            new Vec3(12.97, 14.82, -2.96),
+                            new Vec2(167.85f, -3.90f),
+                            new Vec2(167.85f, -3.90f),
+                            50,
+                            120.0,
+                            8,
+                            new Easing().quadIn()
+                    ).setAction(2,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.2f);
+                            }
+                    ).setAction(4,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.27f);
+                            }
+                    ).setAction(5,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.32f);
+                            }
+                    ).setAction(6.5f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.375f);
+                            }
+                    ).setAction(7f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.4f);
+                            }
+                    )
+            );
+
+    public static Cutscene intro2 = new Cutscene().setForceDetached(true).setHideGui(true)
+            .addTransition(
+                    new EasingTransition(
+                            new Vec3(12.97, 14.82, -2.96),
+                            new Vec3(12.97, 14.82, -2.96),
+                            new Vec2(167.85f, -3.90f),
+                            new Vec2(167.85f, -3.90f),
+                            120,
+                            50,
+                            2.5f,
+                            new Easing().quadOut()
+                    ).setAction(0,
+                            (localPlayer) -> {
+                                ScreenManager.openBlackBars();
+                                PacketManager.screenShake(localPlayer, 0.3f);
+                            }
+                    ).setAction(0.25f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.25f);
+                            }
+                    ).setAction(0.5f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.2f);
+                            }
+                    ).setAction(0.75f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.15f);
+                            }
+                    ).setAction(1f,
+                            (localPlayer) -> {
                                 PacketManager.screenShake(localPlayer, 0.1f);
+                            }
+                    ).setAction(1.25f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.05f);
+                            }
+                    ).setAction(1.3f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.02f);
+                            }
+                    ).setAction(1.4f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0.01f);
+                            }
+                    ).setAction(1.5f,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0);
+                            }
+                    )
+            ).addTransition(
+                    new EasingTransition(3)
+                         .setAction(0,
+                            (localPlayer) -> {
+                                PacketManager.screenShake(localPlayer, 0);
                             }
                     )
             );
@@ -122,6 +214,9 @@ public class Cutscenes {
         }
         else if (id == 3) {
             return new Cutscene(intro);
+        }
+        else if (id == 4) {
+            return new Cutscene(intro2);
         }
         else {
             return null;

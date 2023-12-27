@@ -22,7 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class BlackBarsScreen extends Screen {
+public class BlackBarsScreen extends FixedSceen {
     private float partialTick;
     private long startTime;
     private float durationSeconds;
@@ -115,58 +115,5 @@ public class BlackBarsScreen extends Screen {
 
     public boolean isFinished() {
         return (partialTick >= durationSeconds) && wantsToClose;
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return false;
-    }
-
-    @Override
-    public void onClose() {
-        return;
-    }
-
-    @Override
-    public boolean handleComponentClicked(@Nullable Style style) {
-        return false;
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-
-    @Override
-    public boolean isMouseOver(double d, double e) {
-        return false;
-    }
-
-    @Override
-    public void setFocused(@Nullable GuiEventListener guiEventListener) {
-        return;
-    }
-
-    @Override
-    protected void setInitialFocus(GuiEventListener guiEventListener) {
-        return;
-    }
-
-    @Override
-    protected void changeFocus(ComponentPath componentPath) {
-        ComponentPath componentPath1 = this.getCurrentFocusPath();
-        if (componentPath1 != null) {
-            componentPath1.applyFocus(false);
-        }
-    }
-
-    @Override
-    public void setFocused(boolean bl) {
-        super.setFocused(false);
-    }
-
-    @Override
-    public void renderBackground(GuiGraphics guiGraphics) {
-        return;
     }
 }

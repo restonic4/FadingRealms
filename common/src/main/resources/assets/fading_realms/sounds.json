@@ -4,5 +4,11 @@
     "sounds": [
       "fading_realms:divinity_ring_wind_ambient"
     ]
+  },
+  "divinity_portal_intro": {
+    "subtitle": "sounds.fading_realms.divinity_portal_intro",
+    "sounds": [
+      "fading_realms:divinity_portal_intro"
+    ]
   }
 }

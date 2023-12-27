@@ -2,31 +2,19 @@ package me.restonic4.fading_realms.util.Camera.Effects;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
-import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortal;
+import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.EntityManager;
-import me.restonic4.fading_realms.util.Camera.ICameraMixin;
 import me.restonic4.fading_realms.util.Camera.PacketManager;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-public class SpawnDivinity {
+public class SpawnDivinityPart2 {
     public static boolean isSpawned = false;
-    public static DivinityPortal portal;
+    public static int readyPlayers = 0;
 
     public static void send(Player player) {
         if (!PacketManager.isClient(player)) {
@@ -39,7 +27,7 @@ public class SpawnDivinity {
 
     public static void sendPacket(Player player) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        NetworkManager.sendToServer(PacketManager.SpawnDivinityPacketId, buf);
+        NetworkManager.sendToServer(PacketManager.SpawnDivinityPart2PacketId, buf);
     }
 
     public static void translateMessage(FriendlyByteBuf buf, NetworkManager.PacketContext context) {
@@ -47,20 +35,26 @@ public class SpawnDivinity {
     }
 
     public static void execute(Player player) {
-        if (!isSpawned) {
+        readyPlayers++;
+
+        if (!isSpawned && readyPlayers >= player.getServer().getPlayerCount() * 0.75f) {
             isSpawned = true;
 
             MinecraftServer server = player.getServer();
 
             for (ServerLevel serverLevel : server.getAllLevels()) {
                 if (serverLevel.dimension().toString().toLowerCase().contains("before_limbo")) {
-                    DivinityPortal divinityPortal = new DivinityPortal(EntityManager.DIVINITY_PORTAL.get(), player.level());
-                    divinityPortal.setNoAi(true);
-                    divinityPortal.setPos(0.5f, -5, -64.5f);
+                    if (SpawnDivinity.portal != null) {
+                        SpawnDivinity.portal.kill();
+                    }
 
-                    portal = divinityPortal;
+                    Divinity divinity = new Divinity(EntityManager.DIVINITY.get(), player.level());
+                    divinity.setNoAi(true);
+                    divinity.setPos(0.5f, -15f, -64.5f);
 
-                    serverLevel.addFreshEntity(divinityPortal);
+                    serverLevel.addFreshEntity(divinity);
+
+                    PacketManager.playCutscene(player, 4, 4);
                 }
             }
         }
