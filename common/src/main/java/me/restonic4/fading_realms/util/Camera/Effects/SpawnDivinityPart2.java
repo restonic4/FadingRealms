@@ -54,7 +54,9 @@ public class SpawnDivinityPart2 {
 
                     serverLevel.addFreshEntity(divinity);
 
-                    PacketManager.playCutscene(player, 4, 4);
+                    for (Player playerFound : server.getPlayerList().getPlayers()) {
+                        PacketManager.playCutscene(playerFound, 4, 4);
+                    }
                 }
             }
         }
