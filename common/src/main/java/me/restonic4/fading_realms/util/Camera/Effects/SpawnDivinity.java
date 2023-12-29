@@ -2,6 +2,7 @@ package me.restonic4.fading_realms.util.Camera.Effects;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import me.restonic4.fading_realms.command.CommandManager;
 import me.restonic4.fading_realms.entity.Divinity.Divinity;
 import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortal;
 import me.restonic4.fading_realms.entity.EntityManager;
@@ -51,6 +52,11 @@ public class SpawnDivinity {
             isSpawned = true;
 
             MinecraftServer server = player.getServer();
+
+            if (CommandManager.divinityPortalInit != null) {
+                CommandManager.divinityPortalInit.teleportTo(0, 500, 0);
+                CommandManager.divinityPortalInit.kill();
+            }
 
             for (ServerLevel serverLevel : server.getAllLevels()) {
                 if (serverLevel.dimension().toString().toLowerCase().contains("before_limbo")) {

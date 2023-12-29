@@ -11,6 +11,7 @@ import dev.architectury.event.events.client.ClientChatEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import me.restonic4.fading_realms.dimension.Limbo;
 import me.restonic4.fading_realms.entity.Divinity.Divinity;
+import me.restonic4.fading_realms.entity.DivinityPortalInit.DivinityPortalInit;
 import me.restonic4.fading_realms.entity.EntityManager;
 import me.restonic4.fading_realms.util.Camera.PacketManager;
 import me.restonic4.fading_realms.util.Camera.Cutscene.*;
@@ -44,10 +45,15 @@ public class CommandManager {
 
     public static EasingTransition pathData = new EasingTransition();
 
+    public static DivinityPortalInit divinityPortalInit;
+    public static boolean waiting = false;
+
     static {
         COMMAND_HANDLERS.put("set_spawn_ring_data", CommandManager::set_spawn_ring_data);
         COMMAND_HANDLERS.put("set_before_limbo_box", CommandManager::set_before_limbo_box);
         COMMAND_HANDLERS.put("set_before_limbo_divinity", CommandManager::set_before_limbo_divinity);
+        COMMAND_HANDLERS.put("setup_intro_scene", CommandManager::setup_intro_scene);
+        COMMAND_HANDLERS.put("open_waiting_screen", CommandManager::open_waiting_screen);
     }
 
     private static void defaultHandler(CommandContext<CommandSourceStack> context) {
@@ -107,9 +113,11 @@ public class CommandManager {
         }
 
         if (level != null) {
-            Divinity entity = new Divinity(EntityManager.DIVINITY.get(), level);
+            DivinityPortalInit entity = new DivinityPortalInit(EntityManager.DIVINITY_PORTAL_INIT.get(), level);
             entity.setNoAi(true);
             entity.setPos(0.5f, -15f, -64.5f);
+
+            divinityPortalInit = entity;
 
             level.addFreshEntity(entity);
 
@@ -118,6 +126,22 @@ public class CommandManager {
         else {
             RestApi.Log("Level is null");
         }
+    }
+
+    public static void open_waiting_screen(CommandContext<CommandSourceStack> context) {
+        waiting = true;
+
+        List<ServerPlayer> targetPlayers = context.getSource().getServer().getPlayerList().getPlayers();
+
+        for (ServerPlayer player : targetPlayers) {
+            PacketManager.playCutscene(player, 5);
+        }
+    }
+
+    public static void setup_intro_scene(CommandContext<CommandSourceStack> context) {
+        open_waiting_screen(context);
+        set_before_limbo_box(context);
+        set_before_limbo_divinity(context);
     }
 
     public static void play_cutscene(CommandDispatcher<CommandSourceStack> dispatcher, String command, int permLevel) {
@@ -439,6 +463,8 @@ public class CommandManager {
                     addCutsceneEndPointCommand(dispatcher, "cutscene_end_point", 4);
                     generateCutsceneCodeCommand(dispatcher, "cutscene_generate", 4);
                     addCutscenePlayCommand(dispatcher, "cutscene_play", 4);
+                    addCommand(dispatcher, "setup_intro_scene", 4);
+                    addCommand(dispatcher, "open_waiting_screen", 4);
                 }
         );
 

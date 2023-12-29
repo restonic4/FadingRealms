@@ -1,5 +1,6 @@
 package me.restonic4.fading_realms;
 
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.utils.Env;
@@ -11,6 +12,8 @@ import me.restonic4.fading_realms.dimension.EndDisable;
 import me.restonic4.fading_realms.dimension.Limbo;
 import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortalModel;
 import me.restonic4.fading_realms.entity.DivinityPortal.DivinityPortalRenderer;
+import me.restonic4.fading_realms.entity.DivinityPortalInit.DivinityPortalInitModel;
+import me.restonic4.fading_realms.entity.DivinityPortalInit.DivinityPortalInitRenderer;
 import me.restonic4.fading_realms.item.ItemManager;
 import me.restonic4.fading_realms.entity.Divinity.DivinityModel;
 import me.restonic4.fading_realms.entity.Divinity.DivinityRenderer;
@@ -64,6 +67,16 @@ public class FadingRealms
 		RestApi.Log("///////////////////////////////////////////////////////", MOD_ID);
 		RestApi.Log("////  - - - - |FADING REALMS CORE LOADED| - - - -  ////", MOD_ID);
 		RestApi.Log("///////////////////////////////////////////////////////", MOD_ID);
+
+		//// EVENTS ////
+
+		PlayerEvent.PLAYER_JOIN.register(
+				(serverPlayer) -> {
+					if (CommandManager.waiting) {
+						PacketManager.openWaitingScreen(serverPlayer);
+					}
+				}
+		);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -75,6 +88,9 @@ public class FadingRealms
 
 			EntityRendererRegistry.register(EntityManager.DIVINITY_PORTAL, (context) -> new DivinityPortalRenderer(context, DIVINITY_SCALE));
 			EntityModelLayerRegistry.register(DivinityPortalModel.LAYER_LOCATION, DivinityPortalModel::createBodyLayer);
+
+			EntityRendererRegistry.register(EntityManager.DIVINITY_PORTAL_INIT, (context) -> new DivinityPortalInitRenderer(context, DIVINITY_SCALE));
+			EntityModelLayerRegistry.register(DivinityPortalInitModel.LAYER_LOCATION, DivinityPortalInitModel::createBodyLayer);
 		}
 	}
 }

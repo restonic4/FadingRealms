@@ -24,7 +24,7 @@ public class Limbo {
                         if (dimName.contains("before") && dimName.contains("limbo")) {
                             for (ServerPlayer serverPlayer : levelFound.players()) {
                                 if (serverPlayer.getY() <= 0) {
-                                    MobEffectInstance effect = new MobEffectInstance(MobEffects.LEVITATION, 60, 1);
+                                    MobEffectInstance effect = new MobEffectInstance(MobEffects.LEVITATION, 60, 1, true, true, false);
 
                                     serverPlayer.addEffect(effect);
                                 }

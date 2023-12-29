@@ -10,5 +10,20 @@
     "sounds": [
       "fading_realms:divinity_portal_intro"
     ]
+  },
+  "ambient.limbo.loop": {
+    "sounds": [
+      {
+        "name": "fading_realms:before_limbo_ambient",
+        "stream": true,
+        "volume": 0.25
+      }
+    ]
+  },
+  "divinity_portal_init_ambient": {
+    "subtitle": "sounds.fading_realms.divinity_portal_init_ambient",
+    "sounds": [
+      "fading_realms:divinity_portal_init_ambient"
+    ]
   }
 }

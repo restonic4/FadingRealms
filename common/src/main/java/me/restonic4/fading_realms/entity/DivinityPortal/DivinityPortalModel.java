@@ -16,7 +16,7 @@ import static me.restonic4.fading_realms.FadingRealms.MOD_ID;
 
 public class DivinityPortalModel<T extends DivinityPortal> extends HierarchicalModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "testentity"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(MOD_ID, "divinity_portal"), "main");
 	private final ModelPart root;
 
 	public DivinityPortalModel(ModelPart root) {

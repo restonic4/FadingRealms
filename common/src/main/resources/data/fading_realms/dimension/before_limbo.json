@@ -73,7 +73,7 @@
       "type": "minecraft:multi_noise",
       "biomes": [
         {
-          "biome": "minecraft:the_void",
+          "biome": "fading_realms:limbo",
           "parameters": {
             "temperature": 0,
             "humidity": 0,

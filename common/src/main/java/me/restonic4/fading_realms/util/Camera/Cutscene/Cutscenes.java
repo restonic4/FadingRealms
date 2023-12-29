@@ -200,6 +200,31 @@ public class Cutscenes {
                                 PacketManager.screenShake(localPlayer, 0);
                             }
                     )
+            ).addTransition(
+                    new EasingTransition(
+                            new Vec3(12.97, 14.82, -2.96),
+                            new Vec3(0, 0, 1),
+                            new Vec2(167.85f, -3.90f),
+                            new Vec2(180, -10),
+                            50,
+                            70,
+                            2.5f,
+                            new Easing().quadInOut()
+                    ).setAction(2,
+                            (localPlayer) -> {
+                                PacketManager.spawnDivinityTeleport(localPlayer);
+                                localPlayer.setXRot(-10f);
+                                localPlayer.setYRot(180);
+                            }
+                    )
+            );
+
+    public static Cutscene waiting = new Cutscene().setForceDetached(true).setHideGui(true)
+            .addTransition(
+                    new EasingTransition(1)
+                        .setAction(0,
+                                PacketManager::openWaitingScreen
+                    )
             );
 
     public static Cutscene getCutscene(int id) {
@@ -217,6 +242,9 @@ public class Cutscenes {
         }
         else if (id == 4) {
             return new Cutscene(intro2);
+        }
+        else if (id == 5) {
+            return new Cutscene(waiting);
         }
         else {
             return null;

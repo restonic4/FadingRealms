@@ -22,14 +22,17 @@ public class PacketManager {
     public static final ResourceLocation ForceDetachedCameraPacketId = new ResourceLocation(MOD_ID, "force_detached_camera_packet");
     public static final ResourceLocation PlayCutscenePacketId = new ResourceLocation(MOD_ID, "play_cutscene_packet");
     public static final ResourceLocation CloseScreensPacketId = new ResourceLocation(MOD_ID, "close_screens_packet");
+    public static final ResourceLocation OpenWaitingScreenPacketId = new ResourceLocation(MOD_ID, "open_waiting_screen_packet");
 
     //CLIENT TO SERVER
     public static final ResourceLocation SpawnDivinityPacketId = new ResourceLocation(MOD_ID, "spawn_divinity_packet");
     public static final ResourceLocation SpawnDivinityPart2PacketId = new ResourceLocation(MOD_ID, "spawn_divinity_part2_packet");
+    public static final ResourceLocation SpawnDivinityTeleportPacketId = new ResourceLocation(MOD_ID, "spawn_divinity_teleport_packet");
 
     /**
         METHODS TO CALL
     **/
+
     public static void screenShake(Player player, float intensity) {
         ScreenShake.sendShake(player, intensity);
     }
@@ -66,6 +69,14 @@ public class PacketManager {
         SpawnDivinityPart2.send(player);
     }
 
+    public static void spawnDivinityTeleport(Player player) {
+        SpawnDivinityTeleport.send(player);
+    }
+
+    public static void openWaitingScreen(Player player) {
+        OpenWaitingScreen.send(player);
+    }
+
     /**
         MAIN METHODS
     **/
@@ -96,6 +107,12 @@ public class PacketManager {
 
         //Spawn divinity part 2
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, SpawnDivinityPart2PacketId, SpawnDivinityPart2::translateMessage);
+
+        //Spawn divinity teleport
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, SpawnDivinityTeleportPacketId, SpawnDivinityTeleport::translateMessage);
+
+        //Open waiting screen
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, OpenWaitingScreenPacketId, OpenWaitingScreen::translateMessage);
     }
 
     private static void registerEvents() {
